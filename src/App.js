@@ -22,14 +22,25 @@ const App = () => {
     appId: "52a29b8c9c6444d2afd6e7038eaa3e0a",
     channel: "test",
     token:
-      "00652a29b8c9c6444d2afd6e7038eaa3e0aIAAXT47SCnkHI20/+6Y41vIvMJflbcGT95nFthuazjsyBgx+f9hh03IJIgBRsHoBjG4HYwQAAQAcKwZjAgAcKwZjAwAcKwZjBAAcKwZj",
+      "00652a29b8c9c6444d2afd6e7038eaa3e0aIAD+z1CZ6wcbLoJuNg3oHxq7rj2LktG4XjAKG6vfNdSoIwx+f9hh03IJIgBYXiwCDHYHYwQAAQCcMgZjAgCcMgZjAwCcMgZjBACcMgZj",
     uid: 123456,
   };
+
+  // const getToken = async () =>{
+
+  //   const url = `https://mediline-agora-token-service.herokuapp.com/rtc/${rtcProps.channel}/publisher/${rtcProps.uid}`;
+  //   const response = await axios.get(url)
+  //   const token = response.data.token;
+  //   rtcProps.token = token;
+  //   setVideoCall(true);
+  // }
+
   const callbacks = {
     EndCall: () => setVideoCall(false),
   };
   return videoCall ? (
     <div style={{ display: "flex", width: "100vw", height: "100vh" }}>
+      <h1>Mediline</h1>
       <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />
     </div>
   ) : (

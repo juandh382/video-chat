@@ -19,10 +19,10 @@ EndCall: The callback function for ending the call.\
 
 ## Token get url sintax is
 
-Base url https://mediline-agora-token-service.herokuapp.com/rtc/:channel/:role/:uid/\
+Base url https://mediline-agora-token-service.herokuapp.com/rtc/:channel/:role/:uid/ \
 :channel is the channel name\
 :role is the role of the user (publisher or subscriber)\
-:uid is the user id\
+:uid is the user id
 
 ### Example: https://mediline-agora-token-service.herokuapp.com/rtc/test/publisher/uid/123456/
 
@@ -44,7 +44,7 @@ You may also see any lint errors in the console.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
+Launches the test runner in the interactive watch mode.
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `npm run build`

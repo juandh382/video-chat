@@ -8,10 +8,10 @@ In order to get the video call component working on the project you must install
 
 ## For rtcProps you must set the following properties:
 
-appId: The App ID of your Agora account.\
-channel: The channel name for the AgoraRTC session.\
+appId: The App ID of your Agora project.\
+channel: The channel name for the AgoraRTC session. qeue_id + timestamp when the call start .\
 token: The token for authentication.\
-uid: The user ID for this client.\
+uid: The user ID for this client - we get this id from gateway/user/getAllPublicUsers login is the email and id is the id .\
 
 ## For callbacks you must set the following properties:
 
@@ -19,7 +19,7 @@ EndCall: The callback function for ending the call.\
 
 ## Token get url sintax is
 
-Base url https://mediline-agora-token-service.herokuapp.com/rtc/:channel/:role/:uid/ \
+Base url https://mediline-agora-token-service.herokuapp.com/rtc/:channel/:role/:uid/\
 :channel is the channel name\
 :role is the role of the user (publisher or subscriber)\
 :uid is the user id\

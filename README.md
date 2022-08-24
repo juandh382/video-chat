@@ -1,6 +1,6 @@
 # Video call using the Agora UI Kit
 
-In order to get the video call component working on the project you must install with
+In order to get the video call component working on the project you must install with\
 
 ## npm i agora-react-uikit
 
@@ -8,21 +8,21 @@ In order to get the video call component working on the project you must install
 
 ## For rtcProps you must set the following properties:
 
-appId: The App ID of your Agora account.
-channel: The channel name for the AgoraRTC session.
-token: The token for authentication.
-uid: The user ID for this client.
+appId: The App ID of your Agora account.\
+channel: The channel name for the AgoraRTC session.\
+token: The token for authentication.\
+uid: The user ID for this client.\
 
 ## For callbacks you must set the following properties:
 
-EndCall: The callback function for ending the call.
+EndCall: The callback function for ending the call.\
 
 ## Token get url sintax is
 
-Base url https://mediline-agora-token-service.herokuapp.com/rtc/:channel/:role/:uid/
-:channel is the channel name
-:role is the role of the user (publisher or subscriber)
-:uid is the user id
+Base url https://mediline-agora-token-service.herokuapp.com/rtc/:channel/:role/:uid/ \
+:channel is the channel name\
+:role is the role of the user (publisher or subscriber)\
+:uid is the user id\
 
 ### Example: https://mediline-agora-token-service.herokuapp.com/rtc/test/publisher/uid/123456/
 

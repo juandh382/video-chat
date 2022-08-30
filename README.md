@@ -19,12 +19,12 @@ EndCall: The callback function for ending the call.\
 
 ## Token get url sintax is
 
-Base url https://mediline-agora-token-service.herokuapp.com/rtc/:channel/:role/:uid/ \
+Base url https://agora-access-token-nodejs.herokuapp.com/rtc/:channel/:role/:uid/ \
 :channel is the channel name\
 :role is the role of the user (publisher or subscriber)\
 :uid is the user id
 
-### Example: https://mediline-agora-token-service.herokuapp.com/rtc/test/publisher/uid/123456/
+### Example: https://agora-access-token-nodejs.herokuapp.com/rtc/test/publisher/uid/123456/
 
 # Getting Started with Create React App
 

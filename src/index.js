@@ -4,9 +4,16 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+const obj = {
+  id: "1",
+  data: { queueId: "96d2aac4-5a0e-4c45-bd5c-8bd692596a79" },
+  rol: "suscriber",
+};
+
 root.render(
   <React.StrictMode>
-    <App />
+    <App {...obj} />
   </React.StrictMode>
 );
 

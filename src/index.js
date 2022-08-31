@@ -6,9 +6,9 @@ import reportWebVitals from "./reportWebVitals";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const obj = {
-  id: "1",
-  data: { queueId: "96d2aac4-5a0e-4c45-bd5c-8bd692596a79" },
-  rol: "suscriber",
+  uid: "1050",
+  data: { queueId: "49ab2496-0c94-475d-93a1-4b2198e7956e" },
+  role: "subscriber",
 };
 
 root.render(

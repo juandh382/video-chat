@@ -2,39 +2,45 @@ import React, { useState, useEffect } from "react";
 import AgoraUIKit from "agora-react-uikit";
 import axios from "axios";
 
-const App = ({ id, data, rol }) => {
+const App = ({ uid, data, role }) => {
   const [videoCall, setVideoCall] = useState(false);
-  const channel = data.queueId;
-  const rtcProps = {
-    appId: process.env.REACT_APP_AGORA_APP_ID,
-    channel: channel,
-    token: "",
-    uid: id,
-  };
+  const [token, setToken] = useState("");
 
-  useEffect(() => {
-    const getToken = async () => {
-      const url = `${process.env.REACT_APP_AGORA_TOKEN_SERVICE}/rtc/${rtcProps.channel}/${rol}/uid/${rtcProps.uid}`;
-      console.log(url);
+  const channel = data.queueId;
+
+  const handleCall = async () => {
+    const url = `${process.env.REACT_APP_AGORA_TOKEN_SERVICE}/rtc/${channel}/${role}/uid/${uid}`;
+    try {
       const response = await axios.get(url);
       const token = response.data.rtcToken;
-      console.log("token", token);
-      rtcProps.token = token;
-      //eslint-disable-next-line
-      console.log(rtcProps);
-      //eslint-disable-next-line
-      console.log(data);
-    };
-
-    getToken();
-  }, []);
-
-  const callbacks = {
-    EndCall: () => setVideoCall(false),
+      setToken(token);
+      setVideoCall(true);
+    } catch (err) {
+      alert(err);
+    }
   };
 
-  return <h1>Hola</h1>;
+  const callbacks = {
+    EndCall: () => {
+      setToken("");
+      setVideoCall(false);
+    },
+  };
+  return videoCall ? (
+    <div style={{ display: "flex", width: "100vw", height: "100vh" }}>
+      <AgoraUIKit
+        rtcProps={{
+          appId: process.env.REACT_APP_AGORA_APP_ID,
+          channel: channel,
+          token: token,
+          uid: uid,
+        }}
+        callbacks={callbacks}
+      />
+    </div>
+  ) : (
+    <h3 onClick={() => handleCall()}>Start Call</h3>
+  );
 };
-// <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />
 
 export default App;

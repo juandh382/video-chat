@@ -19,6 +19,72 @@ const VideoCall = ({ videoCallData, setVideoCall, setMessage }) => {
     getToken();
   }, [videoCallData]);
 
+  const callbacks = {
+    EndCall: () => setVideoCall(false),
+    "user-joined": () => {
+      // https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html#user_joined
+      console.log("MediLine - 🧍 Remote User joined");
+    },
+    "user-left": () => {
+      //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html#user_left
+      console.log("MediLine - 🧍 Remote user left");
+      setMessage("El usuario remoto se desconecto");
+      setVideoCall(false);
+      console.log("MediLine - 🧍 setVideoCall to end call");
+    },
+    "user-unpublished": () => {
+      //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html#user_published
+      console.log("MediLine - 🧍 Remote user unpublished");
+    },
+    "user-published": () => {
+      // https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html#user_unpublished
+      console.log("MediLine - 🧍 Remote User Publish event");
+    },
+    "network-quality": (e) => {
+      //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.NetworkQuality.html
+      console.log(
+        "MediLine - 🧍 network-quality donwlink (0 unknow 1 excellent to 6 disconnected): " +
+          e.downlinkNetworkQuality
+      );
+      console.log(
+        "MediLine - 🧍 network-quality uplink (0 unknow 1 excellent to 6 disconnected): " +
+          e.uplinkNetworkQuality
+      );
+    },
+
+    "local-user-mute-audio": (e) => {
+      //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.UIKitEventsInterface.html#local-user-mute-audio
+      console.log("MediLine - 🧍 local-user-mute-audio: " + e);
+    },
+    "remote-user-mute-audio": (e) => {
+      //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.UIKitEventsInterface.html#remote_user_mute_audio
+      console.log("MediLine - 🧍 remote-user-mute-audio: " + e);
+    },
+    // More about RTC Interface https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html
+    //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.UIKitEventsInterface.html
+    // channel-media-relay-event
+    // channel-media-relay-state
+    // connection-state-change
+    // crypt-error
+    // is-using-cloud-proxy
+    // live-streaming-error
+    // live-streaming-warning
+    // media-reconnect-end
+    // media-reconnect-start
+    // network-quality
+    // stream-fallback
+    // stream-inject-status
+    // stream-type-changed
+    // token-privilege-did-expire
+    // token-privilege-will-expire
+    // user-info-updated
+    // user-joined
+    // user-left
+    // user-published
+    // user-unpublished
+    // volume-indicator
+  };
+
   return (
     <div style={{ display: "flex", width: "100vw", height: "100vh" }}>
       {token && (
@@ -30,22 +96,7 @@ const VideoCall = ({ videoCallData, setVideoCall, setMessage }) => {
             uid: videoCallData.uid,
             layout: videoCallData.layout,
           }}
-          callbacks={{
-            EndCall: () => setVideoCall(false),
-            "user-joined": () =>
-              console.log("MediLine - 🧍 Remote User joined"),
-            "user-left": () => {
-              console.log("MediLine - 🧍 Remote user left");
-              setMessage("El usuario remoto se desconecto");
-              setVideoCall(false);
-
-              console.log("MediLine - 🧍 setVideoCall to end call");
-            },
-            "user-unpublished": () =>
-              console.log("MediLine - 🧍 Remote user unpublished"),
-            "user-published": () =>
-              console.log("MediLine - 🧍 Remote User Publish event"),
-          }}
+          callbacks={callbacks}
           rtmProps={{
             username: videoCallData.uid || "user",
             displayUsername: true,

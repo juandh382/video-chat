@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import VideoCall from "./VideoCall";
 const Form = () => {
   const [videoCall, setVideoCall] = useState(false);
+  const [message, setMessage] = useState("");
   const [videoCallData, setVideoCallData] = useState({
     uid: "",
     role: "subscriber",
@@ -30,10 +31,15 @@ const Form = () => {
   };
 
   return videoCall ? (
-    <VideoCall videoCallData={videoCallData} setVideoCall={setVideoCall} />
+    <VideoCall
+      videoCallData={videoCallData}
+      setVideoCall={setVideoCall}
+      setMessage={setMessage}
+    />
   ) : (
     <>
       <div>
+        <h1>Mensaje: {message}</h1>
         <select value={videoCallData.role} onChange={handleChange} name="role">
           <option value="subscriber">Role subscriber</option>
           <option value="publisher">Role publisher</option>

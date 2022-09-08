@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import AgoraUIKit from "agora-react-uikit";
 import axios from "axios";
 
-const VideoCall = ({ videoCallData, setVideoCall }) => {
+const VideoCall = ({ videoCallData, setVideoCall, setMessage }) => {
   const [token, setToken] = useState("");
 
   useEffect(() => {
@@ -36,7 +36,9 @@ const VideoCall = ({ videoCallData, setVideoCall }) => {
               console.log("MediLine - 🧍 Remote User joined"),
             "user-left": () => {
               console.log("MediLine - 🧍 Remote user left");
+              setMessage("El usuario remoto se desconecto");
               setVideoCall(false);
+
               console.log("MediLine - 🧍 setVideoCall to end call");
             },
             "user-unpublished": () =>

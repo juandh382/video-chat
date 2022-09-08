@@ -1,3 +1,11 @@
+# Resumen
+
+Hola gente, esta parte va en español así se me hace más facil a mi explicar el proyecto.\
+Este es un ejemplo básico de como funcionaría la video llamada para MediLine, tiene un index que solo renderiza el componente Form (Padre) quien tiene todos los datos del usuario que se va a conectar y una vez que tiene los mismos los pasa a VideoCall junto con un callback del useState que permite la renderización del hijo de manera condicional.\
+En el hijo VideoCall con los datos recibidos del padre Form, se obtiene el token dinámico desde el servicio montado en Node.js en heroku, este token se pasa junto con todos los datos recibidos al componente AgoraUIKit quien es el encargado de establecer la llamada.\
+El componente de AgoraUIKit tiene muchos callbacks y métodos, use varios para loguearlos en consola y ver cuales nos pueden ser útiles, pueden buscar en la consola la cadena MediLine y les mostrará los que envian los callbacks.\
+Deje documentación y links de cada callback o funcion usada de agora para que puedan ver los links de la documentación oficial.
+
 # Video call using the Agora UI Kit
 
 In order to get the video call component working on the project you must install with\

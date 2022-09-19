@@ -28,38 +28,38 @@ const VideoCall = ({ videoCallData, setVideoCall, setMessage }) => {
     "user-left": () => {
       //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html#user_left
       console.log("MediLine - 🧍 Remote user left");
-      setMessage("El usuario remoto se desconecto");
+      setMessage("MediLine - 🧍 Remote user left");
       setVideoCall(false);
       console.log("MediLine - 🧍 setVideoCall to end call");
     },
-    "user-unpublished": () => {
-      //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html#user_published
-      console.log("MediLine - 🧍 Remote user unpublished");
-    },
-    "user-published": () => {
-      // https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html#user_unpublished
-      console.log("MediLine - 🧍 Remote User Publish event");
-    },
-    "network-quality": (e) => {
-      //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.NetworkQuality.html
-      console.log(
-        "MediLine - 🧍 network-quality donwlink (0 unknow 1 excellent to 6 disconnected): " +
-          e.downlinkNetworkQuality
-      );
-      console.log(
-        "MediLine - 🧍 network-quality uplink (0 unknow 1 excellent to 6 disconnected): " +
-          e.uplinkNetworkQuality
-      );
-    },
+    // "user-unpublished": () => {
+    //   //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html#user_published
+    //   console.log("MediLine - 🧍 Remote user unpublished");
+    // },
+    // "user-published": () => {
+    //   // https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html#user_unpublished
+    //   console.log("MediLine - 🧍 Remote User Publish event");
+    // },
+    // "network-quality": (e) => {
+    //   //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.NetworkQuality.html
+    //   console.log(
+    //     "MediLine - 🧍 network-quality donwlink (0 unknow 1 excellent to 6 disconnected): " +
+    //       e.downlinkNetworkQuality
+    //   );
+    //   console.log(
+    //     "MediLine - 🧍 network-quality uplink (0 unknow 1 excellent to 6 disconnected): " +
+    //       e.uplinkNetworkQuality
+    //   );
+    // },
 
-    "local-user-mute-audio": (e) => {
-      //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.UIKitEventsInterface.html#local-user-mute-audio
-      console.log("MediLine - 🧍 local-user-mute-audio: " + e);
-    },
-    "remote-user-mute-audio": (e) => {
-      //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.UIKitEventsInterface.html#remote_user_mute_audio
-      console.log("MediLine - 🧍 remote-user-mute-audio: " + e);
-    },
+    // "local-user-mute-audio": (e) => {
+    //   //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.UIKitEventsInterface.html#local-user-mute-audio
+    //   console.log("MediLine - 🧍 local-user-mute-audio: " + e);
+    // },
+    // "remote-user-mute-audio": (e) => {
+    //   //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.UIKitEventsInterface.html#remote_user_mute_audio
+    //   console.log("MediLine - 🧍 remote-user-mute-audio: " + e);
+    // },
     // More about RTC Interface https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.RtcEventsInterface.html
     //https://agoraio-community.github.io/Web-React-UIKit/interfaces/_internal_.UIKitEventsInterface.html
     // channel-media-relay-event
@@ -94,13 +94,12 @@ const VideoCall = ({ videoCallData, setVideoCall, setMessage }) => {
             channel: videoCallData.channel,
             token: token,
             uid: videoCallData.uid,
-            layout: videoCallData.layout,
           }}
           callbacks={callbacks}
-          rtmProps={{
-            username: videoCallData.uid || "user",
-            displayUsername: true,
-          }}
+          // rtmProps={{
+          //   username: videoCallData.uid || "user",
+          //   displayUsername: true,
+          // }}
         />
       )}
     </div>

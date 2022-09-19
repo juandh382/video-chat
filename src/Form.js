@@ -17,6 +17,7 @@ const Form = () => {
       alert("Please enter all the fields");
       return;
     }
+    setMessage("");
     setVideoCall(true);
   };
 
@@ -64,15 +65,6 @@ const Form = () => {
             onChange={handleChange}
             margin="normal"
           />
-          <p></p>
-          <select
-            value={videoCallData.layout}
-            onChange={handleChange}
-            name="layout"
-          >
-            <option value="1">Layout pinned</option>
-            <option value="0">Layout grid</option>
-          </select>
 
           <p></p>
           <button type="button" onClick={handleCall}>

@@ -1,14 +1,20 @@
 # Resumen
 
-Hola gente, esta parte va en español así se me hace más facil a mi explicar el proyecto.\
 Este es un ejemplo básico de como funcionaría la video llamada para MediLine, tiene un index que solo renderiza el componente Form (Padre) quien tiene todos los datos del usuario que se va a conectar y una vez que tiene los mismos los pasa a VideoCall junto con un callback del useState que permite la renderización del hijo de manera condicional.\
 En el hijo VideoCall con los datos recibidos del padre Form, se obtiene el token dinámico desde el servicio montado en Node.js en heroku, este token se pasa junto con todos los datos recibidos al componente AgoraUIKit quien es el encargado de establecer la llamada.\
 El componente de AgoraUIKit tiene muchos callbacks y métodos, use varios para loguearlos en consola y ver cuales nos pueden ser útiles, pueden buscar en la consola la cadena MediLine y les mostrará los que envian los callbacks.\
-Deje documentación y links de cada callback o funcion usada de agora para que puedan ver los links de la documentación oficial.
+Deje documentación y links de cada callback o funcion usada de agora para que puedan ver los links de la documentación oficial. \
+
+# Summary
+
+This is a basic example of how the video call would work for MediLine, it has an index that only renders the Form component (Parent) which has all the data of the user that is going to connect and once it has them, it passes them to VideoCall together with a useState callback that allows conditional rendering of the child.\
+In the VideoCall child with the data received from the parent Form, the dynamic token is obtained from the service mounted in Node.js on heroku, this token is passed along with all the data received to the AgoraUIKit component, which is in charge of establishing the call. \
+The AgoraUIKit component has many callbacks and methods, use several to log them in the console and see which ones can be useful, you can search the console for the MediLine string and it will show you the ones that send the callbacks.\
+Leave documentation and links of each callback or function used now so that they can see the links of the official documentation.
 
 # Video call using the Agora UI Kit
 
-In order to get the video call component working on the project you must install with\
+In order to get the video call component working on the project you must install with
 
 ## npm i agora-react-uikit
 
@@ -17,17 +23,17 @@ In order to get the video call component working on the project you must install
 ## For rtcProps you must set the following properties:
 
 appId: The App ID of your Agora project.\
-channel: The channel name for the AgoraRTC session. qeue_id + timestamp when the call start .\
-token: The token for authentication.\
-uid: The user ID for this client - we get this id from gateway/user/getAllPublicUsers login is the email and id is the id .\
+channel: The channel name for the AgoraRTC session. qeue_id + timestamp when the call start.\
+token: The token for authentication. We use the AGORA_TOKEN_SERVICE hosted on heroku.\
+uid: The user ID for this client - we get this id from gateway/user/getAllPublicUsers login is the email and id is the id.
 
 ## For callbacks you must set the following properties:
 
-EndCall: The callback function for ending the call.\
+EndCall: The callback function for ending the call.
 
 ## Token get url sintax is
 
-Base url https://agora-access-token-nodejs.herokuapp.com/rtc/:channel/:role/:uid/ \
+Base url https://agora-access-token-nodejs.herokuapp.com/rtc/:channel/:role/uid/:uid/ \
 :channel is the channel name\
 :role is the role of the user (publisher or subscriber)\
 :uid is the user id

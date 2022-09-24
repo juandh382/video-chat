@@ -40,7 +40,7 @@ const Form = () => {
   ) : (
     <>
       <div>
-        <h1>Mensaje: {message}</h1>
+        <h1>Message: {message}</h1>
         <select value={videoCallData.role} onChange={handleChange} name="role">
           <option value="subscriber">Role subscriber</option>
           <option value="publisher">Role publisher</option>

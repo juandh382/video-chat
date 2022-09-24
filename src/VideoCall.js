@@ -96,10 +96,10 @@ const VideoCall = ({ videoCallData, setVideoCall, setMessage }) => {
             uid: videoCallData.uid,
           }}
           callbacks={callbacks}
-          // rtmProps={{
-          //   username: videoCallData.uid || "user",
-          //   displayUsername: true,
-          // }}
+          rtmProps={{
+            username: videoCallData.uid || "user",
+            displayUsername: true,
+          }}
         />
       )}
     </div>

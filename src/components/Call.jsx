@@ -1,6 +1,8 @@
 import { useCallback, useEffect } from 'react';
-import AgoraRTC from "agora-rtc-sdk";
 import { v4 as uuidv4 } from 'uuid';
+import AgoraRTC from "agora-rtc-sdk";
+
+const client = AgoraRTC.createClient({ mode: "live", codec: "h264" });
 
 const USER_ID = uuidv4();
 
@@ -24,9 +26,24 @@ const Call = () => {
         );
     }, [localStream]);
 
+
+    const initClient = useCallback(() => {
+        client.init(
+            'ee906fa7afb14cfbbb16d4bd60a9d227',
+            function () {
+                console.log("AgoraRTC client initialized");
+            },
+            function (err) {
+                console.log("AgoraRTC client init failed", err);
+            }
+        );
+    }, []);
+
+
     useEffect(() => {
         initLocalStream();
-    }, [initLocalStream]);
+        initClient();
+    }, [initLocalStream, initClient]);
 
     return (
         <>

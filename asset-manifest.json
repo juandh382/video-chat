@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/video-chat/static/js/main.9083e124.js",
+    "main.js": "/video-chat/static/js/main.c1859617.js",
     "index.html": "/video-chat/index.html",
-    "main.9083e124.js.map": "/video-chat/static/js/main.9083e124.js.map"
+    "main.c1859617.js.map": "/video-chat/static/js/main.c1859617.js.map"
   },
   "entrypoints": [
-    "static/js/main.9083e124.js"
+    "static/js/main.c1859617.js"
   ]
 }

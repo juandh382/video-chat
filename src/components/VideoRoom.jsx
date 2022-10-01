@@ -63,10 +63,10 @@ export const VideoRoom = () => {
                 localTrack.stop();
                 localTrack.close();
             }
-
+            
             client.off('user-published', handleUserJoined);
             client.off('user-left', handleUserLeft);
-            client.unpublish(tracks).then(() => client.leave());
+            // client.unpublish(tracks).then(() => client.leave());
         }
 
     }, []);

@@ -1,6 +1,8 @@
 
-import AgoraRTC from "agora-rtc-sdk-ng";
 import { useEffect, useState } from "react";
+import AgoraRTC from "agora-rtc-sdk-ng";
+import VirtualBackgroundExtension from "agora-extension-virtual-background";
+
 import { VideoPlayer } from "./VideoPlayer";
 
 const APP_ID = 'c1524ecb52da48a88e4bd610d33c2334';
@@ -12,9 +14,14 @@ const client = AgoraRTC.createClient({
     codec: 'vp8'
 });
 
+// Create a VirtualBackgroundExtension instance
+const extension = new VirtualBackgroundExtension();
+
+
 export const VideoRoom = () => {
     const [users, setUsers] = useState([]);
     const [localTracks, setLocalTracks] = useState([]);
+    const [processor, setProcessor] = useState({});
 
     const handleUserJoined = async (user, mediaType) => {
         await client.subscribe(user, mediaType);
@@ -34,6 +41,7 @@ export const VideoRoom = () => {
         );
     };
 
+
     useEffect(() => {
         client.on('user-published', handleUserJoined);
         client.on('user-left', handleUserLeft);
@@ -48,7 +56,29 @@ export const VideoRoom = () => {
             )
             .then(([tracks, uid]) => {
                 const [audioTrack, videoTrack] = tracks;
+
                 setLocalTracks(tracks);
+
+                setProcessor(extension.createProcessor());
+
+                const initProcessor = async () =>
+                    await processor.init("../assets/agora-wasm.wasm");
+
+
+                initProcessor()
+                    .then(() => console.log('processor has been initialized'))
+                    .catch(error => console.log(`Error initializing extension: ${error}`));
+
+                videoTrack.pipe(processor).pipe(videoTrack.processorDestination);
+
+                processor.setOptions({ type: 'color', color: '#00ff00' });
+
+                const enable = async () => await processor.enable()
+
+                enable()
+                    .then(() => console.log('processors has been enabled'))
+                    .catch((error) => console.log(`An error occurred during activation ${error}`));
+
                 setUsers((previousUsers) => [
                     ...previousUsers,
                     {
@@ -61,7 +91,7 @@ export const VideoRoom = () => {
             });
 
         const leave = async () => await client.leave()
-        
+
 
         return () => {
             for (let localTrack of localTracks) {

@@ -73,7 +73,7 @@ export const VideoRoom = () => {
             leave()
                 .then(() => console.log("You left the channel"));
         };
-    }, [localTracks]);
+    }, []);
 
     return (
         <div

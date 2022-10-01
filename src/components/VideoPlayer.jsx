@@ -6,7 +6,8 @@ export const VideoPlayer = ({ user }) => {
 
     useEffect(() => {
         user.videoTrack.play(ref.current)
-    }, [])
+        user.audioTrack.play();
+    }, [user.videoTrack, user.audioTrack])
 
     return (
         <div>

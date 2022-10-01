@@ -103,13 +103,13 @@ export const VideoRoom = () => {
                         audioTrack,
                     },
                 ]);
-                client.publish(tracks);
 
                 setBackgroundColor({ videoTrack, audioTrack })
                     .then(() => console.log('Virtual background enabled'))
                     .catch(error => console.log(`An error occurred enabling the virtual background ${error}`));
 
 
+                client.publish(tracks);
             });
 
         const leave = async () => await client.leave()

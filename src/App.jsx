@@ -7,8 +7,8 @@ function App() {
 
   return (
     <div className="App">
-      <h1>WDJ Virtual Call</h1>
-
+      <h1>Virtual Call with Virtual background</h1>
+      <h3>Test 1</h3>
       {
         !joined
           ? (

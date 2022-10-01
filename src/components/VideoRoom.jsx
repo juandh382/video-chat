@@ -1,6 +1,7 @@
 
-import AgoraRTC from "agora-rtc-sdk-ng";
 import { useEffect, useState } from "react";
+import AgoraRTC from "agora-rtc-sdk-ng";
+import VirtualBackgroundExtension from "agora-extension-virtual-background";
 import { VideoPlayer } from "./VideoPlayer";
 
 const APP_ID = 'c1524ecb52da48a88e4bd610d33c2334';
@@ -12,9 +13,16 @@ const client = AgoraRTC.createClient({
     codec: 'vp8'
 });
 
+// Create a VirtualBackgroundExtension instance
+const extension = new VirtualBackgroundExtension();
+// Register the extension
+AgoraRTC.registerExtensions([extension]);
+
+
 export const VideoRoom = () => {
     const [users, setUsers] = useState([]);
     const [localTracks, setLocalTracks] = useState([]);
+    const [processor, setProcessor] = useState();
 
     const handleUserJoined = async (user, mediaType) => {
         await client.subscribe(user, mediaType);
@@ -34,6 +42,42 @@ export const VideoRoom = () => {
         );
     };
 
+    // Initialization
+    const getProcessorInstance = async (localTrack) => {
+        if (!processor && localTrack.videoTrack) {
+            // Create a VirtualBackgroundProcessor instance
+            setProcessor(extension.createProcessor());
+
+            try {
+                // Initialize the extension and pass in the URL of the Wasm file
+                await processor.init("../assets/agora-wasm.wasm");
+            } catch (e) {
+                console.log("Fail to load WASM resource!"); return null;
+            }
+            // Inject the extension into the video processing pipeline in the SDK
+            localTrack.videoTrack.pipe(processor).pipe(localTracks.videoTrack.processorDestination);
+        }
+        return processor;
+    }
+
+
+    // Set a solid color as the background
+    const setBackgroundColor = async (localTrack) => {
+        if (localTrack.videoTrack) {
+
+            let processor = await getProcessorInstance(localTrack);
+
+            try {
+                processor.setOptions({ type: 'color', color: '#00ff00' });
+                await processor.enable();
+            } finally {
+                // document.getElementById("loading").style.display = "none";
+            }
+
+        }
+    }
+
+
     useEffect(() => {
         client.on('user-published', handleUserJoined);
         client.on('user-left', handleUserLeft);
@@ -48,7 +92,9 @@ export const VideoRoom = () => {
             )
             .then(([tracks, uid]) => {
                 const [audioTrack, videoTrack] = tracks;
+
                 setLocalTracks(tracks);
+
                 setUsers((previousUsers) => [
                     ...previousUsers,
                     {
@@ -57,11 +103,17 @@ export const VideoRoom = () => {
                         audioTrack,
                     },
                 ]);
+
+                setBackgroundColor({ videoTrack, audioTrack })
+                    .then(() => console.log('Virtual background enabled'))
+                    .catch(error => console.log(`An error occurred enabling the virtual background ${error}`));
+
+
                 client.publish(tracks);
             });
 
         const leave = async () => await client.leave()
-        
+
 
         return () => {
             for (let localTrack of localTracks) {

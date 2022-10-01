@@ -7,38 +7,38 @@ const APP_ID = 'c1524ecb52da48a88e4bd610d33c2334';
 const TOKEN = '007eJxTYFitKK08MeODuBTbozkmTqaJ5k7RLME+p/YZ/Zm8PyG1TkOBIdnQ1MgkNTnJ1Cgl0cQi0cIi1SQpxczQIMXYONnI2Njk5i7z5G3clsmOzx6wMjJAIIjPzFCeksXAAABQmB3P';
 const CHANNEL = 'wdj';
 
-const agoraEngine = AgoraRTC.createClient({
+const client = AgoraRTC.createClient({
     mode: 'rtc',
     codec: 'vp8'
 });
 
 export const VideoRoom = () => {
-
     const [users, setUsers] = useState([]);
-
-    const [tracks, setTracks] = useState([]);
+    const [localTracks, setLocalTracks] = useState([]);
 
     const handleUserJoined = async (user, mediaType) => {
-        await agoraEngine.subscribe(user, mediaType);
+        await client.subscribe(user, mediaType);
 
-        setUsers(previousUsers => [
-            ...previousUsers,
-            user
-        ]);
-    }
+        if (mediaType === 'video') {
+            setUsers((previousUsers) => [...previousUsers, user]);
+        }
+
+        if (mediaType === 'audio') {
+            user.audioTrack.play()
+        }
+    };
 
     const handleUserLeft = (user) => {
         setUsers((previousUsers) =>
-            previousUsers.filter(u => u.uid !== user.uid)
+            previousUsers.filter((u) => u.uid !== user.uid)
         );
-    }
+    };
 
     useEffect(() => {
-        agoraEngine.on("user-published", handleUserJoined);
-        agoraEngine.on("user-unpublished", handleUserLeft);
+        client.on('user-published', handleUserJoined);
+        client.on('user-left', handleUserLeft);
 
-
-        agoraEngine
+        client
             .join(APP_ID, CHANNEL, TOKEN, null)
             .then((uid) =>
                 Promise.all([
@@ -48,7 +48,7 @@ export const VideoRoom = () => {
             )
             .then(([tracks, uid]) => {
                 const [audioTrack, videoTrack] = tracks;
-                setTracks(tracks);
+                setLocalTracks(tracks);
                 setUsers((previousUsers) => [
                     ...previousUsers,
                     {
@@ -57,42 +57,38 @@ export const VideoRoom = () => {
                         audioTrack,
                     },
                 ]);
-                agoraEngine.publish(tracks);
+                client.publish(tracks);
             });
 
+        const leave = async () => await client.leave()
+        
+
         return () => {
-            for (let localTrack of tracks) {
+            for (let localTrack of localTracks) {
                 localTrack.stop();
                 localTrack.close();
             }
-            agoraEngine.off('user-published', handleUserJoined);
-            agoraEngine.off('user-left', handleUserLeft);
-            // agoraEngine.unpublish(tracks).then(() => client.leave());
+            client.off('user-published', handleUserJoined);
+            client.off('user-left', handleUserLeft);
+            leave()
+                .then(() => console.log("You left the channel"));
         };
-    }, [tracks])
+    }, [localTracks]);
 
     return (
         <div
-            style={{
-                display: 'flex',
-                justifyContent: 'center'
-            }}
+            style={{ display: 'flex', justifyContent: 'center' }}
         >
             <div
                 style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 200px)'
+                    gridTemplateColumns: 'repeat(2, 200px)',
                 }}
             >
-                {
-                    users.map((user) => (
-                        <VideoPlayer
-                            key={user.uid}
-                            user={user}
-                        />
-                    ))
-                }
+                {users.map((user) => (
+                    <VideoPlayer key={user.uid} user={user} />
+                ))}
             </div>
         </div>
-    )
-}
+    );
+};

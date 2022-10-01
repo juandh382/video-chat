@@ -42,8 +42,11 @@ export const VideoRoom = () => {
 
 
         client.join(APP_ID, CHANNEL, TOKEN, null)
-            .then((uid) =>
-                Promise.all([AgoraRTC.createMicrophoneAndCameraTracks(), uid])
+            .then(() =>
+                AgoraRTC.createMicrophoneAudioTrack()
+            )
+            .then(() =>
+                AgoraRTC.createCameraVideoTrack()
             )
             .then(([tracks, uid]) => {
                 const [audioTrack, videoTrack] = tracks;
@@ -63,10 +66,16 @@ export const VideoRoom = () => {
                 localTrack.stop();
                 localTrack.close();
             }
-            
+
             client.off('user-published', handleUserJoined);
             client.off('user-left', handleUserLeft);
-            // client.unpublish(tracks).then(() => client.leave());
+
+            const leave = async () => {
+                return await client.leave()
+            }
+
+            leave()
+                .then(() => console.log("You left the channel"));
         }
 
     }, []);

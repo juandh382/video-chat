@@ -50,7 +50,7 @@ export const VideoRoom = () => {
 
             try {
                 // Initialize the extension and pass in the URL of the Wasm file
-                await processor.init(process.env.PUBLIC_URL+"/assets/agora-wasm.wasm");
+                await processor.init(process.env.PUBLIC_URL+"/assets/wasms");
             } catch (e) {
                 console.log("Fail to load WASM resource!"); return null;
             }

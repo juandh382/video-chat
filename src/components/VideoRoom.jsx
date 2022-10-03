@@ -76,7 +76,7 @@ export const VideoRoom = () => {
                 console.log(`An error occurred enabling the virtual background ${error}`)
             }
 
-            virtualBackgroundEnabled = true;
+            // virtualBackgroundEnabled = true;
         }
     }
 

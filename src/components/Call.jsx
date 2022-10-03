@@ -13,12 +13,14 @@ const extension = new VirtualBackgroundExtension();
 // Register the extension
 AgoraRTC.registerExtensions([extension]);
 
+let processor = null;
+
 export const Call = () => {
 
   const { options } = useContext(OptionsContext)
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
-  const [processor, setProcessor] = useState();
+
 
   const handleUserPublished = async (user, mediaType) => {
 
@@ -83,12 +85,13 @@ export const Call = () => {
         .then(() => console.log("You left the channel"));
     }
   }, []);
+
   // Initialization
   async function getProcessorInstance() {
-    const [_, videoTrack] = localTracks;
-    if (!processor && videoTrack) {
+
+    if (!processor && localTracks[1]) {
       // Create a VirtualBackgroundProcessor instance
-      setProcessor(extension.createProcessor());
+      processor = extension.createProcessor();
 
       try {
         // Initialize the extension and pass in the URL of the Wasm file
@@ -97,16 +100,14 @@ export const Call = () => {
         console.log("Fail to load WASM resource!"); return null;
       }
       // Inject the extension into the video processing pipeline in the SDK
-      videoTrack.pipe(processor).pipe(videoTrack.processorDestination);
+      localTracks[1].pipe(processor).pipe(localTracks[1].processorDestination);
     }
     return processor;
   }
-  // Set a solid color as the background
+
   async function setBackgroundColor() {
-
-    const [_, videoTrack] = localTracks;
-
-    if (videoTrack) {
+    if (localTracks[1]) {
+      // document.getElementById("loading").style.display = "block";
 
       let processor = await getProcessorInstance();
 
@@ -114,9 +115,10 @@ export const Call = () => {
         processor.setOptions({ type: 'color', color: '#00ff00' });
         await processor.enable();
       } finally {
-        console.log('virtual background is enabled');
+        // document.getElementById("loading").style.display = "none";
       }
 
+      // virtualBackgroundEnabled = true;
     }
   }
 

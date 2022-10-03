@@ -17,36 +17,8 @@ export const Call = () => {
 
   const { options } = useContext(OptionsContext)
   const [users, setUsers] = useState([]);
-  const [localTracks, setLocalTracks] = useState({
-    audioTrack: null,
-    videoTrack: null
-  });
+  const [localTracks, setLocalTracks] = useState([]);
   const [processor, setProcessor] = useState();
-
-  const join = async () => {
-    const uid = await client.join(options.appId, options.channel, options.token, null);
-    const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-    const videoTrack = await AgoraRTC.createCameraVideoTrack();
-
-    setLocalTracks({
-      audioTrack,
-      videoTrack
-    });
-
-    await client.publish([localTracks.audioTrack, localTracks.videoTrack])
-
-    setUsers(previousUsers => (
-      [
-        ...previousUsers,
-        {
-
-          audioTrack: localTracks.audioTrack,
-          videoTrack: localTracks.videoTrack,
-          uid
-        }
-      ]
-    ));
-  }
 
   const handleUserPublished = async (user, mediaType) => {
 
@@ -63,7 +35,7 @@ export const Call = () => {
     }
   }
 
-  const handleUserUnpublished = async (user) => {
+  const handleUserUnpublished = (user) => {
     setUsers((previousUsers) => previousUsers.filter((u) => u.uid !== user.uid));
   }
 
@@ -72,7 +44,28 @@ export const Call = () => {
     client.on("user-published", handleUserPublished);
     client.on('user-unpublished', handleUserUnpublished);
 
-    join()
+    client
+      .join(options.appId, options.channel, options.token, null)
+      .then((uid) =>
+        Promise.all([
+          AgoraRTC.createMicrophoneAndCameraTracks(),
+          uid,
+        ])
+      )
+      .then(([tracks, uid]) => {
+        const [audioTrack, videoTrack] = tracks;
+        setLocalTracks(tracks);
+        setUsers((previousUsers) => [
+          ...previousUsers,
+          {
+            uid,
+            videoTrack,
+            audioTrack,
+          },
+        ]);
+        client.publish(tracks);
+      });
+
 
     const leave = async () => await client.leave();
 
@@ -92,7 +85,8 @@ export const Call = () => {
   }, []);
   // Initialization
   async function getProcessorInstance() {
-    if (!processor && localTracks.videoTrack) {
+    const [_, videoTrack] = localTracks;
+    if (!processor && videoTrack) {
       // Create a VirtualBackgroundProcessor instance
       setProcessor(extension.createProcessor());
 
@@ -103,13 +97,16 @@ export const Call = () => {
         console.log("Fail to load WASM resource!"); return null;
       }
       // Inject the extension into the video processing pipeline in the SDK
-      localTracks.videoTrack.pipe(processor).pipe(localTracks.videoTrack.processorDestination);
+      videoTrack.pipe(processor).pipe(videoTrack.processorDestination);
     }
     return processor;
   }
   // Set a solid color as the background
   async function setBackgroundColor() {
-    if (localTracks.videoTrack) {
+
+    const [_, videoTrack] = localTracks;
+
+    if (videoTrack) {
 
       let processor = await getProcessorInstance();
 

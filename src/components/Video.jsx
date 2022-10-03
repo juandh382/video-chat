@@ -11,6 +11,10 @@ export const Video = ({ user }) => {
     }, []);
 
     return (
-        <div className="video-container col-md-6" ref={ref}></div>
+        <div
+            className="video-container col-md-6"
+            ref={ref}
+        >
+        </div>
     )
 }

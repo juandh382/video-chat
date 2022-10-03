@@ -6,7 +6,7 @@ export const Video = ({ user }) => {
 
     useEffect(() => {
 
-        user.videoTrack.play(ref);
+        user.videoTrack.play(ref.current);
 
     }, []);
 

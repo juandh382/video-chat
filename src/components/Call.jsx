@@ -17,28 +17,31 @@ export const Call = () => {
 
   const { options } = useContext(OptionsContext)
   const [users, setUsers] = useState([]);
-  const [localTracks, setLocalTracks] = useState({});
+  const [localTracks, setLocalTracks] = useState({
+    audioTrack: null,
+    videoTrack: null
+  });
   const [processor, setProcessor] = useState();
 
   const join = async () => {
     const uid = await client.join(options.appId, options.channel, options.token, null);
-    const localAudio = await AgoraRTC.createMicrophoneAudioTrack();
-    const localVideo = await AgoraRTC.createCameraVideoTrack();
+    const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+    const videoTrack = await AgoraRTC.createCameraVideoTrack();
 
     setLocalTracks({
-      localAudio,
-      localVideo
+      audioTrack,
+      videoTrack
     });
 
-    await client.publish([localTracks.localAudio, localTracks.localVideo])
+    await client.publish([localTracks.audioTrack, localTracks.videoTrack])
 
     setUsers(previousUsers => (
       [
         ...previousUsers,
         {
 
-          audioTrack: localTracks.localAudio,
-          videoTrack: localTracks.localVideo,
+          audioTrack: localTracks.audioTrack,
+          videoTrack: localTracks.videoTrack,
           uid
         }
       ]
@@ -52,12 +55,7 @@ export const Call = () => {
 
     if (mediaType === "video") {
 
-      setUsers(previousUsers => (
-        [
-          ...previousUsers,
-          user
-        ]
-      ));
+      setUsers(previousUsers => [...previousUsers, user]);
     }
 
     if (mediaType === "audio") {
@@ -66,9 +64,7 @@ export const Call = () => {
   }
 
   const handleUserUnpublished = async (user) => {
-    setUsers((previousUsers) =>
-      previousUsers.filter((u) => u.uid !== user.uid)
-    );
+    setUsers((previousUsers) => previousUsers.filter((u) => u.uid !== user.uid));
   }
 
   useEffect(() => {

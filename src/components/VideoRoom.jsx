@@ -43,39 +43,43 @@ export const VideoRoom = () => {
     };
 
     // Initialization
-    const getProcessorInstance = async (localTrack) => {
-        if (!processor && localTrack.videoTrack) {
+    const getProcessorInstance = async () => {
+        if (!processor && localTracks.videoTrack) {
             // Create a VirtualBackgroundProcessor instance
-            setProcessor(extension.createProcessor());
+            processor = extension.createProcessor();
 
             try {
                 // Initialize the extension and pass in the URL of the Wasm file
-                await processor.init(process.env.PUBLIC_URL+"/assets/wasms");
+                await processor.init(process.env.PUBLIC_URL + "/assets/wasms");
             } catch (e) {
                 console.log("Fail to load WASM resource!"); return null;
             }
             // Inject the extension into the video processing pipeline in the SDK
-            localTrack.videoTrack.pipe(processor).pipe(localTracks.videoTrack.processorDestination);
+            localTracks.videoTrack.pipe(processor).pipe(localTracks.videoTrack.processorDestination);
         }
         return processor;
     }
 
 
     // Set a solid color as the background
-    const setBackgroundColor = async (localTrack) => {
-        if (localTrack.videoTrack) {
-
-            let processor = await getProcessorInstance(localTrack);
+    const setBackgroundColor = async () => {
+        if (localTracks.videoTrack) {
 
             try {
+                let processor = await getProcessorInstance();
+
+                setProcessor(processor);
+
                 processor.setOptions({ type: 'color', color: '#00ff00' });
                 await processor.enable();
-            } finally {
-                // document.getElementById("loading").style.display = "none";
+            } catch (error) {
+                console.log(`An error occurred enabling the virtual background ${error}`)
             }
 
+            virtualBackgroundEnabled = true;
         }
     }
+
 
 
     useEffect(() => {
@@ -104,7 +108,7 @@ export const VideoRoom = () => {
                     },
                 ]);
 
-                setBackgroundColor({ videoTrack, audioTrack })
+                setBackgroundColor()
                     .then(() => console.log('Virtual background enabled'))
                     .catch(error => console.log(`An error occurred enabling the virtual background ${error}`));
 

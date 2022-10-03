@@ -5,8 +5,8 @@ import VirtualBackgroundExtension from "agora-extension-virtual-background";
 import { VideoPlayer } from "./VideoPlayer";
 
 const APP_ID = 'c1524ecb52da48a88e4bd610d33c2334';
-const TOKEN = '007eJxTYFitKK08MeODuBTbozkmTqaJ5k7RLME+p/YZ/Zm8PyG1TkOBIdnQ1MgkNTnJ1Cgl0cQi0cIi1SQpxczQIMXYONnI2Njk5i7z5G3clsmOzx6wMjJAIIjPzFCeksXAAABQmB3P';
-const CHANNEL = 'wdj';
+const TOKEN = '007eJxTYFCNOqQQ3WXVp3VZR0nj3xJXc+cVOZ/cDslYJe0REky9f1aBIdnQ1MgkNTnJ1Cgl0cQi0cIi1SQpxczQIMXYONnI2Njko4tV8pmp1smC0TysjAwQCOLzMJSkFpfoJmck5uWl5jAwAAC0lyGt';
+const CHANNEL = 'test-channel';
 
 const client = AgoraRTC.createClient({
     mode: 'rtc',

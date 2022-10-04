@@ -37,8 +37,9 @@ export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackgrou
   }
 
   const handleUserUnpublished = (user) => {
-    handleMessage(`${user.uid} ha salido de la llamada`);
-    setUsers((previousUsers) => previousUsers.filter((u) => u.uid !== user.uid));
+    
+    
+    
   }
 
   // Initialization
@@ -103,10 +104,15 @@ export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackgrou
     await client.leave();
   }
 
+  const handleUserLeft = (user) => {
+    setUsers(users => users.filter(u => u.uid !== user.uid))
+  }
+
   useEffect(() => {
 
     client.on("user-published", handleUserPublished);
     client.on('user-unpublished', handleUserUnpublished);
+    client.on("user-left", handleUserLeft)
 
     client
       .join(rtcProps.appId, rtcProps.channel, rtcProps.token, rtcProps.uid)
@@ -140,7 +146,9 @@ export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackgrou
 
       client.off('user-published', handleUserPublished);
       client.off('user-left', handleUserUnpublished);
+      client.off('user-left', handleUserLeft);
       processor = null;
+      // setUsers((previousUsers) => previousUsers.filter((u) => u.uid !== rtcProps.uid))
       leave()
         .then(() => handleMessage("You left the channel"));
     }

@@ -22,12 +22,13 @@ export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackgrou
 
   const handleUserPublished = async (user, mediaType) => {
 
+    
+
     handleMessage(`${user.uid} ha entrado a la llamada`)
     await client.subscribe(user, mediaType);
     console.log("subscribe success");
 
-    if (mediaType === "video") {
-
+    if (mediaType === "video" && !users.find(u => u.uid == user.uid)) {
       setUsers(previousUsers => [...previousUsers, user]);
     }
 

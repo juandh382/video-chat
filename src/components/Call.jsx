@@ -14,31 +14,56 @@ AgoraRTC.registerExtensions([extension]);
 let processor = null;
 
 export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackground }) => {
-  
+
 
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
 
-
-  const handleUserPublished = async (user, mediaType) => {
-
-    await client.subscribe(user, mediaType);
-    console.log("subscribe success");
-
-    if (mediaType === "video" && !users.find(u => u.uid == user.uid)) {
-      setUsers(previousUsers => [...previousUsers, user]);
-    }
-
-    if (mediaType === "audio") {
-      user.audioTrack.play();
-    }
+  const handleUserLeft = (user) => {
+    setUsers(users => users.filter(u => u.uid !== user.uid))
   }
 
-  const handleUserUnpublished = (user) => {
-    
-    !user.videoTrack && setUsers(users => users.filter(u => u.uid !== user.uid))
-    
-  }
+  useEffect(() => {
+    client.on("user-published", async (user, mediaType) => {
+
+      await client.subscribe(user, mediaType);
+      console.log("subscribe success");
+
+      if (mediaType === "video" && !users.some(u => u.uid === user.uid)) {
+        setUsers(previousUsers => [...previousUsers, user]);
+      }
+
+      if (mediaType === "audio") {
+        user.audioTrack.play();
+      }
+    });
+    client.on('user-unpublished', (user) => {
+      if (!user.videoTrack) {
+
+        setUsers(users => users.filter(u => u.uid !== user.uid))
+
+      }
+    });
+    client.on("user-left", (user) => {
+      handleMessage(`${user.uid} left the videocall`)
+    })
+  }, []);
+
+  // const handleUserPublished = async (user, mediaType) => {
+
+  //   await client.subscribe(user, mediaType);
+  //   console.log("subscribe success");
+
+  //   if (mediaType === "video" && !users.find(u => u.uid == user.uid)) {
+  //     setUsers(previousUsers => [...previousUsers, user]);
+  //   }
+
+  //   if (mediaType === "audio") {
+  //     user.audioTrack.play();
+  //   }
+  // }
+
+
 
   // Initialization
   async function getProcessorInstance() {
@@ -102,15 +127,8 @@ export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackgrou
     await client.leave();
   }
 
-  const handleUserLeft = (user) => {
-    setUsers(users => users.filter(u => u.uid !== user.uid))
-  }
 
   useEffect(() => {
-
-    client.on("user-published", handleUserPublished);
-    client.on('user-unpublished', handleUserUnpublished);
-    client.on("user-left", handleUserLeft)
 
     client
       .join(rtcProps.appId, rtcProps.channel, rtcProps.token, rtcProps.uid)
@@ -142,9 +160,7 @@ export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackgrou
         localTrack.setEnabled(false)
       }
 
-      client.off('user-published', handleUserPublished);
-      client.off('user-left', handleUserUnpublished);
-      client.off('user-left', handleUserLeft);
+      client.removeAllListeners();
       processor = null;
       // setUsers((previousUsers) => previousUsers.filter((u) => u.uid !== rtcProps.uid))
       leave()

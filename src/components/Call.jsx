@@ -22,9 +22,6 @@ export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackgrou
 
   const handleUserPublished = async (user, mediaType) => {
 
-    
-
-    handleMessage(`${user.uid} ha entrado a la llamada`)
     await client.subscribe(user, mediaType);
     console.log("subscribe success");
 
@@ -39,7 +36,7 @@ export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackgrou
 
   const handleUserUnpublished = (user) => {
     
-    
+    !user.videoTrack && setUsers(users => users.filter(u => u.uid !== user.uid))
     
   }
 

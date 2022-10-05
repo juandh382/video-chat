@@ -1,3 +1,4 @@
 
 export * from './Call';
-export * from './Video';
+export * from './LocalVideo';
+export * from './RemoteVideo';

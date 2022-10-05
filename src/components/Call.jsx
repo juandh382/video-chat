@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import VirtualBackgroundExtension from 'agora-extension-virtual-background';
-import { Video } from './Video';
+import { LocalVideo } from './LocalVideo';
+import { RemoteVideo } from './RemoteVideo';
+import { VideoControllers } from './VideoButtons';
 
 
 import '../css/call.css';
@@ -13,62 +15,96 @@ AgoraRTC.registerExtensions([extension]);
 
 let processor = null;
 
-export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackground }) => {
+export const Call = ({ rtcProps = {}, virtualBackground = {} }) => {
 
+  const [localTracks, setLocalTracks] = useState({
+    audioTrack: null,
+    videoTrack: null
+  });
 
-  const [users, setUsers] = useState([]);
-  const [localTracks, setLocalTracks] = useState([]);
+  const [virtualBackgroundEnabled, setVirtualBackgroundEnabled] = useState(false);
 
-  const handleUserLeft = (user) => {
-    setUsers(users => users.filter(u => u.uid !== user.uid))
+  const join = async () => {
+    await client.join(rtcProps.appId, rtcProps.channel, rtcProps.token, rtcProps.uid);
+
   }
 
-  useEffect(() => {
-    client.on("user-published", async (user, mediaType) => {
+  const startVideo = () => {
+    AgoraRTC.createCameraVideoTrack()
+      .then(videoTrack => {
+        setLocalTracks(tracks => ({
+          ...tracks,
+          videoTrack
+        }));
+        client.publish(videoTrack);
+        videoTrack.play('local');
+      })
+  }
 
-      await client.subscribe(user, mediaType);
-      console.log("subscribe success");
+  const startAudio = () => {
+    AgoraRTC.createMicrophoneAudioTrack()
+      .then(audioTrack => {
 
-      if (mediaType === "video" && !users.some(u => u.uid === user.uid)) {
-        setUsers(previousUsers => [...previousUsers, user]);
-      }
+        setLocalTracks(tracks => ({
+          ...tracks,
+          audioTrack
+        }));
+        client.publish(audioTrack);
+        audioTrack.play();
+      });
+  }
 
-      if (mediaType === "audio") {
-        user.audioTrack.play();
-      }
-    });
-    client.on('user-unpublished', (user) => {
-      if (!user.videoTrack) {
+  const stopVideo = () => {
+    localTracks.videoTrack.close();
+    localTracks.videoTrack.stop();
+    client.unpublish(localTracks.videoTrack);
+  }
 
-        setUsers(users => users.filter(u => u.uid !== user.uid))
+  const stopAudio = () => {
+    localTracks.audioTrack.close();
+    localTracks.audioTrack.stop();
+    client.unpublish(localTracks.audioTrack);
+  }
 
-      }
-    });
-    client.on("user-left", (user) => {
-      handleMessage(`${user.uid} left the videocall`)
-    })
-  }, []);
+  const leaveVideoCall = () => {
+    client.leave();
+    stopVideo();
+    stopAudio();
+  }
 
-  // const handleUserPublished = async (user, mediaType) => {
 
-  //   await client.subscribe(user, mediaType);
-  //   console.log("subscribe success");
+  async function startOneToOneVideoCall() {
+    join()
+      .then(() => {
+        startVideo();
+        startAudio();
 
-  //   if (mediaType === "video" && !users.find(u => u.uid == user.uid)) {
-  //     setUsers(previousUsers => [...previousUsers, user]);
-  //   }
+        client.on('user-published', async (user, mediaType) => {
 
-  //   if (mediaType === "audio") {
-  //     user.audioTrack.play();
-  //   }
-  // }
+          if (client._users.length > 1) {
+            client.leave();
+            alert('Please Wait Room is Full');
+            return;
+          }
 
+          await client.subscribe(user, mediaType);
+          if (mediaType === 'video') {
+            const remoteVideoTrack = user.videoTrack;
+            remoteVideoTrack.play('remote');
+          }
+
+          if (mediaType === 'audio') {
+            user.audioTrack.play();
+          }
+        });
+      });
+  }
 
 
   // Initialization
   async function getProcessorInstance() {
 
-    if (!processor && localTracks[1]) {
+    if (!processor && localTracks.videoTrack) {
       // Create a VirtualBackgroundProcessor instance
       processor = extension.createProcessor();
 
@@ -79,13 +115,13 @@ export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackgrou
         console.log("Fail to load WASM resource!"); return null;
       }
       // Inject the extension into the video processing pipeline in the SDK
-      localTracks[1].pipe(processor).pipe(localTracks[1].processorDestination);
+      localTracks.videoTrack.pipe(processor).pipe(localTracks.videoTrack.processorDestination);
     }
     return processor;
   }
 
   async function setBackground() {
-    if (localTracks[1]) {
+    if (localTracks.videoTrack) {
       let processor = await getProcessorInstance();
       try {
         switch (virtualBackground.type) {
@@ -123,63 +159,33 @@ export const Call = ({ rtcProps, toggleVideoCall, handleMessage, virtualBackgrou
     }
   }
 
-  const leave = async () => {
-    await client.leave();
-  }
-
 
   useEffect(() => {
-
-    client
-      .join(rtcProps.appId, rtcProps.channel, rtcProps.token, rtcProps.uid)
-      .then((uid) =>
-        Promise.all([
-          AgoraRTC.createMicrophoneAndCameraTracks(),
-          uid,
-        ])
-      )
-      .then(([tracks, uid]) => {
-        handleMessage(`${uid} ha entrado a la llamada`)
-        const [audioTrack, videoTrack] = tracks;
-        setLocalTracks(tracks);
-        setUsers((previousUsers) => [
-          ...previousUsers,
-          {
-            uid,
-            videoTrack,
-            audioTrack,
-          },
-        ]);
-        client.publish(tracks);
-      });
-
-    return () => {
-      for (let localTrack of localTracks) {
-        localTrack.stop();
-        localTrack.close();
-        localTrack.setEnabled(false)
-      }
-
-      client.removeAllListeners();
-      processor = null;
-      // setUsers((previousUsers) => previousUsers.filter((u) => u.uid !== rtcProps.uid))
-      leave()
-        .then(() => handleMessage("You left the channel"));
-    }
+    startOneToOneVideoCall();
   }, []);
-
-  const handleClickLeave = () => toggleVideoCall();
 
 
   return (
-    <>
-      <div className='row py-5'>
-        {
-          users.map(user => (
-            <Video key={user.uid} user={user} handleClickLeave={handleClickLeave} localUserUid={rtcProps.uid} virtualBackground={{ data: virtualBackground, setBackground }} />
-          ))
-        }
+
+    <div className="d-flex justify-content-center w-100 p-2">
+      <div className="p-2 rounded shadow-lg position-relative">
+
+        <LocalVideo />
+        <RemoteVideo />
+        <VideoControllers
+          actions={{
+            startAudio,
+            stopAudio,
+            startVideo,
+            stopVideo,
+            leaveVideoCall,
+            startOneToOneVideoCall,
+            setBackground
+          }}
+        />
       </div>
-    </>
+
+    </div>
+
   )
 }

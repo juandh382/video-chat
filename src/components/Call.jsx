@@ -50,7 +50,7 @@ export const Call = ({ rtcProps = {}, virtualBackground = {} }) => {
           audioTrack
         }));
         client.publish(audioTrack);
-        audioTrack.play();
+        // audioTrack.play();
       });
   }
 

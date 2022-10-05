@@ -22,8 +22,6 @@ export const Call = ({ rtcProps = {}, virtualBackground = {} }) => {
     videoTrack: null
   });
 
-  const [virtualBackgroundEnabled, setVirtualBackgroundEnabled] = useState(false);
-
   const join = async () => {
     await client.join(rtcProps.appId, rtcProps.channel, rtcProps.token, rtcProps.uid);
 

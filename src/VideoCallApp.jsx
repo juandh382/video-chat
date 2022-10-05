@@ -5,16 +5,9 @@ import axios from "axios";
 import { Call } from "./components";
 
 
-const VideoCallApp = () => {
+const VideoCallApp = ({videoCallData}) => {
 
   const [token, setToken] = useState("");
-
-  const [videoCallData, setVideoCall] = useState({
-    uid: uuidv4(),
-    role: "subscriber",
-    channel: "channel-test",
-    layout: 1,
-  });
 
   const [virtualBackgroundData, setVirtualBackgroundData] = useState({
     type: 'color',

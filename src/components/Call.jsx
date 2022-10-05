@@ -67,9 +67,9 @@ export const Call = ({ rtcProps = {}, virtualBackground = {} }) => {
   }
 
   const leaveVideoCall = () => {
-    client.leave();
     stopVideo();
     stopAudio();
+    client.leave();
   }
 
 
